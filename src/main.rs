@@ -1,17 +1,19 @@
+mod handlers;
 use axum ::{
     extract:: State,
-    routing::get,
+    routing::{get,post},
     Router,
 };
   
 use sqlx::{postgres::PgPoolOptions, PgPool};
 use std::env;
+use handlers::{health, transaction};
 
 // 1.Define the Application State
 // This struct holds our database pool. Axum will pass this around securely
 // In a Production app, you might also add Redis or a Solana RPC client here.
 #[derive(Clone)]
-struct AppState{
+pub struct AppState{
     db: PgPool
 }
 
@@ -43,7 +45,8 @@ async fn main(){
     // 5. The Router with state Injection
     // We attach the state to the router using '.with_state(state)'
     let app = Router::new()
-    .route("/health",get(health_check))
+    .route("/health",get(health::health_check))
+    .route("/transactions",post(transaction::submit_transaction))
     .with_state(state);
 
     // 6.Start the server
@@ -54,11 +57,3 @@ async fn main(){
 }
 
 
-// 7. The Handler with the State Extracter
-// Notice 'State(state): State<AppState>'. Axum automatically pulls the pool 
-// from the router and gives it to this function, this is the rust way to alternative to 
-// Global variables
-async fn health_check(State(state):State<AppState>)-> &'static str{
-    // we can now safely use the state.db to query to database here.
-    "Ignition Engine is healthy and connected to the DB!"
-}
