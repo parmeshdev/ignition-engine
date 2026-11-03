@@ -1,0 +1,22 @@
+[package]
+name = "ignition-engine"
+version = "0.1.0"
+edition = "2024"
+
+
+[dependencies]
+# the web framework
+axum={version="0.7.5", features=["macros"]}
+
+# The async Event Loop
+tokio = { version = "1.37.0", features = ["full"]}
+
+# JSON Serialization
+serde={version="1.0", features=["derive"]}
+serde_json ="1.0"
+
+# The Database Driver
+sqlx={version="0.7", features=["runtime-tokio-rustls","postgres", "macros"]}
+
+# Enronment Variables
+dotenvy="0.15"
